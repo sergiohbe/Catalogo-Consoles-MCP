@@ -21,17 +21,19 @@ class ConsoleServiceTest {
 
     @Test
     void deveListarTodosOsConsoles() {
-        assertEquals(18, service.listarConsoles(null).size());
+        assertEquals(40, service.listarConsoles(null).size());
     }
 
     @Test
     void deveFiltrarPorFabricante() {
-        assertEquals(6, service.listarConsoles("Microsoft").size());
+        assertEquals(11, service.listarConsoles("Microsoft").size());
+        assertEquals(4, service.listarConsoles("Sega").size());
+        assertEquals(4, service.listarConsoles("Atari").size());
     }
 
     @Test
     void deveBuscarPorNome() {
-        assertEquals(8, service.buscarConsoles("PlayStation").size());
+        assertEquals(12, service.buscarConsoles("PlayStation").size());
     }
 
     @Test
@@ -68,9 +70,11 @@ class ConsoleServiceTest {
     void deveContarConsolesPorFabricante() {
         var contagem = service.contarPorFabricante();
 
-        assertEquals(8L, contagem.get("Sony"));
-        assertEquals(6L, contagem.get("Microsoft"));
-        assertEquals(4L, contagem.get("Nintendo"));
+        assertEquals(12L, contagem.get("Sony"));
+        assertEquals(11L, contagem.get("Microsoft"));
+        assertEquals(9L, contagem.get("Nintendo"));
+        assertEquals(4L, contagem.get("Sega"));
+        assertEquals(4L, contagem.get("Atari"));
     }
 
     @Test

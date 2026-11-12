@@ -25,7 +25,7 @@ public class ConsoleTools {
             "properties", Map.of(
                 "fabricante", Map.of(
                     "type", "string",
-                    "description", "Fabricante para filtrar os consoles, como Sony, Microsoft ou Nintendo."
+                    "description", "Fabricante para filtrar os consoles, como Sony, Microsoft, Sega, Nintendo ou Atari."
                 )
             )
         );

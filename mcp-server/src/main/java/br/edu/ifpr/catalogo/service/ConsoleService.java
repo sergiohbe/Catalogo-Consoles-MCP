@@ -52,10 +52,7 @@ public class ConsoleService {
                 console.getId(),
                 console.getNome(),
                 console.getFabricante(),
-                console.getGeracao(),
-                console.getTipo(),
-                console.getArmazenamento(),
-                console.getDescricao()
+                console.getGeracao()
         ).toLowerCase(Locale.ROOT);
     }
 

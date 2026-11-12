@@ -7,12 +7,9 @@ public class Console {
     private final String fabricante;
     private final int anoLancamento;
     private final String geracao;
-    private final String tipo;
-    private final String armazenamento;
-    private final String descricao;
 
     public Console(String id, String nome, String fabricante, int anoLancamento,
-                   String geracao, String tipo, String armazenamento, String descricao) {
+                   String geracao) {
         this.id = validarTexto(id, "id");
         this.nome = validarTexto(nome, "nome");
         this.fabricante = validarTexto(fabricante, "fabricante");
@@ -23,9 +20,6 @@ public class Console {
 
         this.anoLancamento = anoLancamento;
         this.geracao = validarTexto(geracao, "geração");
-        this.tipo = validarTexto(tipo, "tipo");
-        this.armazenamento = validarTexto(armazenamento, "armazenamento");
-        this.descricao = validarTexto(descricao, "descrição");
     }
 
     private static String validarTexto(String valor, String campo) {
@@ -54,18 +48,6 @@ public class Console {
 
     public String getGeracao() {
         return geracao;
-    }
-
-    public String getTipo() {
-        return tipo;
-    }
-
-    public String getArmazenamento() {
-        return armazenamento;
-    }
-
-    public String getDescricao() {
-        return descricao;
     }
 
     @Override

@@ -33,6 +33,8 @@ public class MainServidor {
 
         servidor.addTool(ferramentas.listarConsolesTool());
         servidor.addTool(ferramentas.buscarConsolesTool());
+        servidor.addTool(ferramentas.compararConsolesTool());
+        servidor.addTool(ferramentas.estatisticasConsolesTool());
 
         Runtime.getRuntime().addShutdownHook(
                 new Thread(servidor::close)

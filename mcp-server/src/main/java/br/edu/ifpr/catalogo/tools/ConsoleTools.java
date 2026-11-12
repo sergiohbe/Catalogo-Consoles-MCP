@@ -19,6 +19,73 @@ public class ConsoleTools {
         this.service = service;
     }
 
+    public SyncToolSpecification estatisticasConsolesTool() {
+        Tool tool = Tool.builder()
+                .name("estatisticas_consoles")
+                .description("Mostra o total de consoles e a quantidade por fabricante.")
+                .inputSchema(Map.of("type", "object", "properties", Map.of()))
+                .build();
+
+        return SyncToolSpecification.builder()
+                .tool(tool)
+                .callHandler((exchange, request) -> {
+                    String fabricantes = service.contarPorFabricante().entrySet().stream()
+                            .map(entrada -> "- " + entrada.getKey() + ": " + entrada.getValue())
+                            .collect(Collectors.joining("\n"));
+                    String resultado = "Total de consoles: " + service.contarConsoles()
+                            + "\nConsoles por fabricante:\n" + fabricantes;
+                    return CallToolResult.builder()
+                            .content(List.of(new TextContent(resultado)))
+                            .build();
+                })
+                .build();
+    }
+
+    public SyncToolSpecification compararConsolesTool() {
+        Map<String, Object> identificador = Map.of(
+                "type", "string",
+                "description", "ID ou nome completo do console.");
+        Tool tool = Tool.builder()
+                .name("comparar_consoles")
+                .description("Compara os dados de dois consoles pelo ID ou nome completo.")
+                .inputSchema(Map.of(
+                        "type", "object",
+                        "properties", Map.of("primeiro", identificador, "segundo", identificador),
+                        "required", List.of("primeiro", "segundo")))
+                .build();
+
+        return SyncToolSpecification.builder()
+                .tool(tool)
+                .callHandler((exchange, request) -> {
+                    var argumentos = request.arguments();
+                    Object primeiro = argumentos == null ? null : argumentos.get("primeiro");
+                    Object segundo = argumentos == null ? null : argumentos.get("segundo");
+                    try {
+                        if (!(primeiro instanceof String primeiroId) || primeiroId.isBlank()
+                                || !(segundo instanceof String segundoId) || segundoId.isBlank()) {
+                            throw new IllegalArgumentException("Informe o ID ou nome completo dos dois consoles.");
+                        }
+                        var consoles = service.compararConsoles(primeiroId, segundoId);
+                        String comparacao = consoles.stream()
+                                .map(console -> "- " + console.getNome()
+                                        + " | ID: " + console.getId()
+                                        + " | Fabricante: " + console.getFabricante()
+                                        + " | Lançamento: " + console.getAnoLancamento()
+                                        + " | Geração: " + console.getGeracao())
+                                .collect(Collectors.joining("\n"));
+                        return CallToolResult.builder()
+                                .content(List.of(new TextContent("Comparação de consoles:\n" + comparacao)))
+                                .build();
+                    } catch (IllegalArgumentException e) {
+                        return CallToolResult.builder()
+                                .isError(true)
+                                .content(List.of(new TextContent(e.getMessage())))
+                                .build();
+                    }
+                })
+                .build();
+    }
+
     public SyncToolSpecification listarConsolesTool() {
         Map<String, Object> schema = Map.of(
             "type", "object",

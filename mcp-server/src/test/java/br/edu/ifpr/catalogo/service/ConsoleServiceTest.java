@@ -5,10 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import br.edu.ifpr.catalogo.repository.ConsoleRepository;
+import br.edu.ifpr.catalogo.model.Console;
 
 class ConsoleServiceTest {
 
@@ -83,5 +87,90 @@ class ConsoleServiceTest {
                 IllegalArgumentException.class,
                 () -> service.buscarConsoles(" ")
         );
+    }
+
+    @Test
+    void deveRejeitarRepositorioNulo() {
+        assertThrows(IllegalArgumentException.class, () -> new ConsoleService(null));
+    }
+
+    @Test
+    void deveAceitarFiltroEmBrancoENormalizarFabricante() {
+        assertEquals(40, service.listarConsoles(" \t").size());
+        assertEquals(4, service.listarConsoles(" sEgA ").size());
+        assertTrue(service.listarConsoles("inexistente").isEmpty());
+    }
+
+    @Test
+    void deveBuscarPorIdFabricanteEGeracaoIgnorandoEspacosEMaiusculas() {
+        assertEquals("ps5-pro", service.buscarConsoles(" PS5-PRO ").getFirst().getId());
+        assertEquals(4, service.buscarConsoles(" sEgA ").size());
+        assertEquals(3, service.buscarConsoles("3ª geração").size());
+        assertTrue(service.buscarConsoles("inexistente").isEmpty());
+    }
+
+    @Test
+    void deveRejeitarBuscaNulaOuVazia() {
+        for (String termo : new String[] { null, "", "\t" }) {
+            assertThrows(IllegalArgumentException.class, () -> service.buscarConsoles(termo));
+        }
+    }
+
+    @Test
+    void deveRetornarOptionalVazioParaIdentificadorInvalido() {
+        for (String identificador : new String[] { null, "", " \t" }) {
+            assertTrue(service.obterConsole(identificador).isEmpty());
+        }
+    }
+
+    @Test
+    void deveNormalizarIdentificadorENomeNaConsultaIndividual() {
+        assertEquals("ps2", service.obterConsole(" PS2 ").orElseThrow().getId());
+        assertEquals("ps2", service.obterConsole(" PlayStation 2 ").orElseThrow().getId());
+    }
+
+    @Test
+    void deveRejeitarPrimeiroOuSegundoConsoleInvalidoNaComparacao() {
+        for (String identificador : new String[] { null, "", " ", "inexistente" }) {
+            var primeiro = assertThrows(IllegalArgumentException.class,
+                    () -> service.compararConsoles(identificador, "ps2"));
+            var segundo = assertThrows(IllegalArgumentException.class,
+                    () -> service.compararConsoles("ps2", identificador));
+            assertEquals("Console não encontrado: " + identificador, primeiro.getMessage());
+            assertEquals("Console não encontrado: " + identificador, segundo.getMessage());
+        }
+    }
+
+    @Test
+    void devePermitirCompararMesmoConsoleSemAlterarCatalogo() {
+        var comparacao = service.compararConsoles("ps2", "PlayStation 2");
+        assertEquals(List.of("ps2", "ps2"), comparacao.stream().map(Console::getId).toList());
+        assertEquals(40, service.contarConsoles());
+    }
+
+    @Test
+    void deveContarTotalEImpedirAlteracaoDasEstatisticas() {
+        assertEquals(40, service.contarConsoles());
+        assertEquals(40L, service.contarPorFabricante().values().stream().mapToLong(Long::longValue).sum());
+        assertEquals(List.of("Atari", "Microsoft", "Nintendo", "Sega", "Sony"),
+                List.copyOf(service.contarPorFabricante().keySet()));
+        assertThrows(UnsupportedOperationException.class, () -> service.contarPorFabricante().put("Outra", 1L));
+    }
+
+    @Test
+    void deveTratarCatalogoVazio() {
+        var vazio = new ConsoleService(new ConsoleRepository() {
+            @Override
+            public List<Console> listarTodos() {
+                return List.of();
+            }
+        });
+        assertTrue(vazio.listarConsoles(null).isEmpty());
+        assertTrue(vazio.listarConsoles("Sony").isEmpty());
+        assertTrue(vazio.buscarConsoles("ps2").isEmpty());
+        assertTrue(vazio.obterConsole("ps2").isEmpty());
+        assertEquals(0, vazio.contarConsoles());
+        assertEquals(Map.of(), vazio.contarPorFabricante());
+        assertThrows(IllegalArgumentException.class, () -> vazio.compararConsoles("ps2", "ps3"));
     }
 }

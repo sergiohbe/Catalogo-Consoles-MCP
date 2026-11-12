@@ -60,16 +60,17 @@ public class MainCliente {
             try {
                 var inicializacao = cliente.initialize();
                 System.out.println("Conectado ao servidor: " + inicializacao.serverInfo().name());
-                System.out.println("Ferramentas disponíveis:");
-                cliente.listTools().tools().forEach(tool -> System.out.println("- " + tool.name()));
             } catch (RuntimeException e) {
                 throw new FalhaComunicacao("conectar ao servidor MCP e descobrir suas ferramentas", e);
             }
 
             var catalogo = new ClienteCatalogo(cliente);
+            var ferramentas = catalogo.listarFerramentas();
             if (termo == null) {
-                new MenuCliente(catalogo).executar();
+                new MenuCliente(ferramentas, catalogo).executar();
             } else {
+                System.out.println("Ferramentas disponíveis:");
+                ferramentas.forEach(tool -> System.out.println("- " + tool.name()));
                 exibirResultado(catalogo.consultar("listar_consoles", Map.of()));
                 exibirResultado(catalogo.consultar("buscar_consoles", Map.of("termo", termo)));
             }

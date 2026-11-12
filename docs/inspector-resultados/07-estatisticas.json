@@ -1,0 +1,9 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Total de consoles: 40\nConsoles por fabricante:\n- Atari: 4\n- Microsoft: 11\n- Nintendo: 9\n- Sega: 4\n- Sony: 12"
+    }
+  ],
+  "isError": false
+}

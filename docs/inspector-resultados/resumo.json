@@ -1,0 +1,184 @@
+{
+  "data": "2026-11-12",
+  "inspector": "2.13.0",
+  "node": "24.14.0",
+  "modo": "CLI/STDIO",
+  "cenarios": [
+    {
+      "cenario": "01-ferramentas",
+      "codigoSaida": 0,
+      "erroMcpEsperado": false,
+      "aprovado": true,
+      "argumentosInspector": [
+        "--yes",
+        "@modelcontextprotocol/inspector@2.13.0",
+        "--cli",
+        "java",
+        "-jar",
+        "mcp-server/target/mcp-server-1.0-SNAPSHOT.jar",
+        "--method",
+        "tools/list"
+      ]
+    },
+    {
+      "cenario": "02-listagem",
+      "codigoSaida": 0,
+      "erroMcpEsperado": false,
+      "aprovado": true,
+      "argumentosInspector": [
+        "--yes",
+        "@modelcontextprotocol/inspector@2.13.0",
+        "--cli",
+        "java",
+        "-jar",
+        "mcp-server/target/mcp-server-1.0-SNAPSHOT.jar",
+        "--method",
+        "tools/call",
+        "--tool-name",
+        "listar_consoles"
+      ]
+    },
+    {
+      "cenario": "03-filtro-sega",
+      "codigoSaida": 0,
+      "erroMcpEsperado": false,
+      "aprovado": true,
+      "argumentosInspector": [
+        "--yes",
+        "@modelcontextprotocol/inspector@2.13.0",
+        "--cli",
+        "java",
+        "-jar",
+        "mcp-server/target/mcp-server-1.0-SNAPSHOT.jar",
+        "--method",
+        "tools/call",
+        "--tool-name",
+        "listar_consoles",
+        "--tool-arg",
+        "fabricante=Sega"
+      ]
+    },
+    {
+      "cenario": "04-busca",
+      "codigoSaida": 0,
+      "erroMcpEsperado": false,
+      "aprovado": true,
+      "argumentosInspector": [
+        "--yes",
+        "@modelcontextprotocol/inspector@2.13.0",
+        "--cli",
+        "java",
+        "-jar",
+        "mcp-server/target/mcp-server-1.0-SNAPSHOT.jar",
+        "--method",
+        "tools/call",
+        "--tool-name",
+        "buscar_consoles",
+        "--tool-arg",
+        "termo=Dreamcast"
+      ]
+    },
+    {
+      "cenario": "05-busca-vazia",
+      "codigoSaida": 0,
+      "erroMcpEsperado": false,
+      "aprovado": true,
+      "argumentosInspector": [
+        "--yes",
+        "@modelcontextprotocol/inspector@2.13.0",
+        "--cli",
+        "java",
+        "-jar",
+        "mcp-server/target/mcp-server-1.0-SNAPSHOT.jar",
+        "--method",
+        "tools/call",
+        "--tool-name",
+        "buscar_consoles",
+        "--tool-arg",
+        "termo=inexistente"
+      ]
+    },
+    {
+      "cenario": "06-comparacao",
+      "codigoSaida": 0,
+      "erroMcpEsperado": false,
+      "aprovado": true,
+      "argumentosInspector": [
+        "--yes",
+        "@modelcontextprotocol/inspector@2.13.0",
+        "--cli",
+        "java",
+        "-jar",
+        "mcp-server/target/mcp-server-1.0-SNAPSHOT.jar",
+        "--method",
+        "tools/call",
+        "--tool-name",
+        "comparar_consoles",
+        "--tool-arg",
+        "primeiro=ps5-pro",
+        "--tool-arg",
+        "segundo=xbox-series-x"
+      ]
+    },
+    {
+      "cenario": "07-estatisticas",
+      "codigoSaida": 0,
+      "erroMcpEsperado": false,
+      "aprovado": true,
+      "argumentosInspector": [
+        "--yes",
+        "@modelcontextprotocol/inspector@2.13.0",
+        "--cli",
+        "java",
+        "-jar",
+        "mcp-server/target/mcp-server-1.0-SNAPSHOT.jar",
+        "--method",
+        "tools/call",
+        "--tool-name",
+        "estatisticas_consoles"
+      ]
+    },
+    {
+      "cenario": "08-console-inexistente",
+      "codigoSaida": 1,
+      "erroMcpEsperado": true,
+      "aprovado": true,
+      "argumentosInspector": [
+        "--yes",
+        "@modelcontextprotocol/inspector@2.13.0",
+        "--cli",
+        "java",
+        "-jar",
+        "mcp-server/target/mcp-server-1.0-SNAPSHOT.jar",
+        "--method",
+        "tools/call",
+        "--tool-name",
+        "comparar_consoles",
+        "--tool-arg",
+        "primeiro=ps2",
+        "--tool-arg",
+        "segundo=inexistente"
+      ]
+    },
+    {
+      "cenario": "09-parametro-ausente",
+      "codigoSaida": 1,
+      "erroMcpEsperado": true,
+      "aprovado": true,
+      "argumentosInspector": [
+        "--yes",
+        "@modelcontextprotocol/inspector@2.13.0",
+        "--cli",
+        "java",
+        "-jar",
+        "mcp-server/target/mcp-server-1.0-SNAPSHOT.jar",
+        "--method",
+        "tools/call",
+        "--tool-name",
+        "comparar_consoles",
+        "--tool-arg",
+        "primeiro=ps2"
+      ]
+    }
+  ]
+}

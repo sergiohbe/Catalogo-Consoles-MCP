@@ -17,6 +17,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>br.edu.ifpr</groupId>
+            <artifactId>mcp-server</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>io.modelcontextprotocol.sdk</groupId>
             <artifactId>mcp</artifactId>
         </dependency>
@@ -30,6 +36,24 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.5.2</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <catalogo.servidor.jar>${project.basedir}/../mcp-server/target/mcp-server-${project.version}.jar</catalogo.servidor.jar>
+                    </systemPropertyVariables>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>

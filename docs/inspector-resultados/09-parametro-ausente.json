@@ -1,0 +1,9 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Tool (comparar_consoles) input validation failed: Validation failed: JSON schema validation errors: [: propriedade obrigatória 'segundo' não encontrada]"
+    }
+  ],
+  "isError": true
+}

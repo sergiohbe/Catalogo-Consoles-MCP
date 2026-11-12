@@ -13,8 +13,58 @@ import br.edu.ifpr.catalogo.service.ConsoleService;
 import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema.TextContent;
+import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 
 class ConsoleToolsTest {
+
+    private CallToolResult chamar(SyncToolSpecification ferramenta, Map<String, Object> argumentos) {
+        return ferramenta.callHandler().apply(null, CallToolRequest.builder()
+                .name(ferramenta.tool().name()).arguments(argumentos).build());
+    }
+
+    private String texto(CallToolResult resultado) {
+        assertFalse(Boolean.TRUE.equals(resultado.isError()));
+        return ((TextContent) resultado.content().getFirst()).text();
+    }
+
+    @Test
+    void deveListarSemFiltroOuComFiltroVazio() {
+        var ferramenta = new ConsoleTools(new ConsoleService(new ConsoleRepository())).listarConsolesTool();
+        assertTrue(texto(chamar(ferramenta, null)).contains("Consoles cadastrados (40)"));
+        assertTrue(texto(chamar(ferramenta, Map.of())).contains("Consoles cadastrados (40)"));
+        assertTrue(texto(chamar(ferramenta, Map.of("fabricante", " "))).contains("Consoles cadastrados (40)"));
+    }
+
+    @Test
+    void deveExibirListaFiltradaOuMensagemSemFabricanteEncontrado() {
+        var ferramenta = new ConsoleTools(new ConsoleService(new ConsoleRepository())).listarConsolesTool();
+        String lista = texto(chamar(ferramenta, Map.of("fabricante", "Sega")));
+        assertTrue(lista.contains("Consoles do fabricante Sega (4)"));
+        assertTrue(lista.contains("Dreamcast | Fabricante: Sega | Lançamento: 1998"));
+        assertFalse(lista.contains("Fabricante: Sony"));
+        assertEquals("Nenhum console encontrado para o fabricante informado.",
+                texto(chamar(ferramenta, Map.of("fabricante", "inexistente"))));
+    }
+
+    @Test
+    void deveExibirResultadoDaBuscaOuMensagemSemCorrespondencia() {
+        var ferramenta = new ConsoleTools(new ConsoleService(new ConsoleRepository())).buscarConsolesTool();
+        String busca = texto(chamar(ferramenta, Map.of("termo", "Dreamcast")));
+        assertTrue(busca.contains("Resultados da busca por \"Dreamcast\" (1)"));
+        assertTrue(busca.contains("Dreamcast | Fabricante: Sega | Lançamento: 1998"));
+        assertEquals("Nenhum console encontrado para o termo informado.",
+                texto(chamar(ferramenta, Map.of("termo", "inexistente"))));
+    }
+
+    @Test
+    void deveOrientarBuscaSemTermoValidoNoHandler() {
+        var ferramenta = new ConsoleTools(new ConsoleService(new ConsoleRepository())).buscarConsolesTool();
+        assertEquals("Informe um termo para realizar a busca.", texto(chamar(ferramenta, null)));
+        for (Map<String, Object> argumentos : java.util.List.<Map<String, Object>>of(
+                Map.of(), Map.of("termo", ""), Map.of("termo", " \t"), Map.of("termo", 123))) {
+            assertEquals("Informe um termo para realizar a busca.", texto(chamar(ferramenta, argumentos)));
+        }
+    }
 
     @Test
     void deveExibirTotalEContagensPorFabricante() {
@@ -55,9 +105,12 @@ class ConsoleToolsTest {
 
     @Test
     void deveRejeitarArgumentosAusentesVaziosOuDeTipoInvalido() {
+        assertTrue(Boolean.TRUE.equals(comparar(null).isError()));
         for (Map<String, Object> argumentos : java.util.List.<Map<String, Object>>of(
                 Map.of(), Map.of("primeiro", "ps5-pro"),
                 Map.of("primeiro", " ", "segundo", "ps2"),
+                Map.of("primeiro", "ps2", "segundo", " "),
+                Map.of("primeiro", 123, "segundo", "ps2"),
                 Map.of("primeiro", "ps2", "segundo", 123))) {
             assertTrue(Boolean.TRUE.equals(comparar(argumentos).isError()));
         }

@@ -1,0 +1,62 @@
+{
+  "tools": [
+    {
+      "name": "listar_consoles",
+      "description": "Lista os consoles cadastrados, opcionalmente filtrando por fabricante.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "fabricante": {
+            "type": "string",
+            "description": "Fabricante para filtrar os consoles, como Sony, Microsoft, Sega, Nintendo ou Atari."
+          }
+        }
+      }
+    },
+    {
+      "name": "buscar_consoles",
+      "description": "Busca consoles no catálogo utilizando um termo de pesquisa.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "termo": {
+            "type": "string",
+            "description": "Termo utilizado para buscar consoles por nome, fabricante ou características."
+          }
+        },
+        "required": [
+          "termo"
+        ]
+      }
+    },
+    {
+      "name": "comparar_consoles",
+      "description": "Compara os dados de dois consoles pelo ID ou nome completo.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "segundo": {
+            "type": "string",
+            "description": "ID ou nome completo do console."
+          },
+          "primeiro": {
+            "type": "string",
+            "description": "ID ou nome completo do console."
+          }
+        },
+        "required": [
+          "primeiro",
+          "segundo"
+        ]
+      }
+    },
+    {
+      "name": "estatisticas_consoles",
+      "description": "Mostra o total de consoles e a quantidade por fabricante.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

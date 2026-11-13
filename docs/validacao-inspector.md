@@ -8,7 +8,14 @@ Os nove cenários abaixo foram executados pelo **modo CLI do próprio Inspector*
 A conferência pela interface visual foi realizada pelo autor do projeto e
 confirmada nesta conversa em 12/11/2026. Os arquivos JSON anexos documentam
 somente a execução CLI; não foram coletadas capturas da interface visual.
-Claude Desktop é uma validação separada, ainda pendente.
+Na data deste registro inicial, a validação com Claude Desktop ainda estava
+pendente; sua conclusão está documentada no [guia do Claude](validacao-claude-desktop.md).
+
+**Registro histórico:** as evidências abaixo preservam as saídas da versão
+testada. Na versão atual, console inexistente em `comparar_consoles` retorna uma
+mensagem normal, sem `isError: true`, e a busca também exibe a geração. Consulte
+os [contratos atuais das ferramentas](../README.md#ferramentas-disponíveis)
+ao repetir os testes; os arquivos de evidência não foram alterados.
 
 ## Preparar o ambiente
 

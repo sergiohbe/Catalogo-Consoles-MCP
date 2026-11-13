@@ -22,9 +22,16 @@ public class ComparacaoPrompt {
     }
 
     public SyncPromptSpecification especificacao() {
-        var prompt = new Prompt(NOME, "Orienta uma comparação baseada nos dados do catálogo.", List.of(
-                new PromptArgument("primeiro", "ID ou nome completo do primeiro console.", true),
-                new PromptArgument("segundo", "ID ou nome completo do segundo console.", true)));
+        var prompt = Prompt.builder(NOME)
+                .description("Orienta uma comparação baseada nos dados do catálogo.")
+                .arguments(List.of(
+                        PromptArgument.builder("primeiro")
+                                .description("ID ou nome completo do primeiro console.")
+                                .required(true).build(),
+                        PromptArgument.builder("segundo")
+                                .description("ID ou nome completo do segundo console.")
+                                .required(true).build()))
+                .build();
         return new SyncPromptSpecification(prompt, (exchange, request) -> {
             var args = request.arguments();
             if (args == null || !(args.get("primeiro") instanceof String primeiro) || primeiro.isBlank()
@@ -42,8 +49,10 @@ public class ComparacaoPrompt {
                     + "Explique semelhanças e diferenças verificáveis. Não invente preço, desempenho, "
                     + "jogos ou especificações técnicas ausentes. Informe que esses dados não permitem "
                     + "determinar qual console é melhor para um perfil de uso.";
-            return new GetPromptResult("Comparação orientada pelo catálogo.",
-                    List.of(new PromptMessage(Role.USER, new TextContent(texto))));
+            return GetPromptResult.builder(List.of(
+                    new PromptMessage(Role.USER, TextContent.builder(texto).build())))
+                    .description("Comparação orientada pelo catálogo.")
+                    .build();
         });
     }
 }

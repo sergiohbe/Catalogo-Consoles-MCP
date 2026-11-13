@@ -58,7 +58,7 @@ class ComandosContexto {
                     cursor = pagina.nextCursor();
                 } while (cursor != null);
             }
-            case "--recurso" -> cliente.readResource(new ReadResourceRequest(args[1])).contents().forEach(conteudo -> {
+            case "--recurso" -> cliente.readResource(ReadResourceRequest.builder(args[1]).build()).contents().forEach(conteudo -> {
                 if (conteudo instanceof TextResourceContents texto) {
                     saida.println(texto.text());
                 }
@@ -78,7 +78,7 @@ class ComandosContexto {
                     cursor = pagina.nextCursor();
                 } while (cursor != null);
             }
-            case "--prompt" -> cliente.getPrompt(new GetPromptRequest(args[1], argumentos(args))).messages().forEach(mensagem -> {
+            case "--prompt" -> cliente.getPrompt(GetPromptRequest.builder(args[1]).arguments(argumentos(args)).build()).messages().forEach(mensagem -> {
                 if (mensagem.content() instanceof TextContent texto) {
                     saida.println(mensagem.role() + ": " + texto.text());
                 }

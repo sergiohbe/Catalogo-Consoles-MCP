@@ -36,8 +36,7 @@ public class ClienteCatalogo implements ConsultaCatalogo {
     @Override
     public CallToolResult consultar(String ferramenta, Map<String, Object> argumentos) {
         try {
-            return cliente.callTool(CallToolRequest.builder()
-                    .name(ferramenta)
+            return cliente.callTool(CallToolRequest.builder(ferramenta)
                     .arguments(argumentos)
                     .build());
         } catch (RuntimeException e) {

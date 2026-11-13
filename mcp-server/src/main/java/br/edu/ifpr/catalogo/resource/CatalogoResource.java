@@ -31,7 +31,7 @@ public class CatalogoResource {
                     "geracao", console.getGeracao())).toList();
             try {
                 String json = McpJsonDefaults.getMapper().writeValueAsString(dados);
-                return new ReadResourceResult(List.of(new TextResourceContents(URI, "application/json", json)));
+                return ReadResourceResult.builder(List.of(TextResourceContents.builder(URI, json).mimeType("application/json").build())).build();
             } catch (IOException e) {
                 throw new IllegalStateException("Não foi possível gerar o catálogo JSON.", e);
             }

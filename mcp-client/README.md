@@ -70,8 +70,8 @@ erro e encerram o cliente com código 1.
 O caminho do servidor é validado antes da conexão. A inicialização e cada
 requisição têm limite de 15 segundos. Em caso de tempo limite ou falha na
 comunicação, o cliente fecha a sessão e apresenta uma orientação para executar
-novamente. Erros retornados pelas ferramentas, como console inexistente na
-comparação, mantêm o menu disponível.
+novamente. Erros de entrada retornados pelas ferramentas também são exibidos
+sem encerrar o menu.
 
 Na ferramenta `comparar_consoles`, um console não cadastrado retorna uma mensagem
 normal (`Console não encontrado: ...`), sem `Tool Error`. Parâmetros obrigatórios

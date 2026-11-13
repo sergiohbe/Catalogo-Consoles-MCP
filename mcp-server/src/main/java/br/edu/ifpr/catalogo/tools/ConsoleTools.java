@@ -20,10 +20,8 @@ public class ConsoleTools {
     }
 
     public SyncToolSpecification estatisticasConsolesTool() {
-        Tool tool = Tool.builder()
-                .name("estatisticas_consoles")
+        Tool tool = Tool.builder("estatisticas_consoles", Map.of("type", "object", "properties", Map.of()))
                 .description("Mostra o total de consoles e a quantidade por fabricante.")
-                .inputSchema(Map.of("type", "object", "properties", Map.of()))
                 .build();
 
         return SyncToolSpecification.builder()
@@ -35,7 +33,7 @@ public class ConsoleTools {
                     String resultado = "Total de consoles: " + service.contarConsoles()
                             + "\nConsoles por fabricante:\n" + fabricantes;
                     return CallToolResult.builder()
-                            .content(List.of(new TextContent(resultado)))
+                            .content(List.of(TextContent.builder(resultado).build()))
                             .build();
                 })
                 .build();
@@ -45,13 +43,11 @@ public class ConsoleTools {
         Map<String, Object> identificador = Map.of(
                 "type", "string",
                 "description", "ID ou nome completo do console.");
-        Tool tool = Tool.builder()
-                .name("comparar_consoles")
-                .description("Compara os dados de dois consoles pelo ID ou nome completo.")
-                .inputSchema(Map.of(
+        Tool tool = Tool.builder("comparar_consoles", Map.of(
                         "type", "object",
                         "properties", Map.of("primeiro", identificador, "segundo", identificador),
                         "required", List.of("primeiro", "segundo")))
+                .description("Compara os dados de dois consoles pelo ID ou nome completo.")
                 .build();
 
         return SyncToolSpecification.builder()
@@ -64,7 +60,7 @@ public class ConsoleTools {
                             || !(segundo instanceof String segundoId) || segundoId.isBlank()) {
                         return CallToolResult.builder()
                                 .isError(true)
-                                .content(List.of(new TextContent("Informe o ID ou nome completo dos dois consoles.")))
+                                .content(List.of(TextContent.builder("Informe o ID ou nome completo dos dois consoles.").build()))
                                 .build();
                     }
                     try {
@@ -77,11 +73,11 @@ public class ConsoleTools {
                                         + " | Geração: " + console.getGeracao())
                                 .collect(Collectors.joining("\n"));
                         return CallToolResult.builder()
-                                .content(List.of(new TextContent("Comparação de consoles:\n" + comparacao)))
+                                .content(List.of(TextContent.builder("Comparação de consoles:\n" + comparacao).build()))
                                 .build();
                     } catch (IllegalArgumentException e) {
                         return CallToolResult.builder()
-                                .content(List.of(new TextContent(e.getMessage())))
+                                .content(List.of(TextContent.builder(e.getMessage()).build()))
                                 .build();
                     }
                 })
@@ -99,10 +95,8 @@ public class ConsoleTools {
             )
         );
 
-        Tool tool = Tool.builder()
-                .name("listar_consoles")
+        Tool tool = Tool.builder("listar_consoles", schema)
                 .description("Lista os consoles cadastrados, opcionalmente filtrando por fabricante.")
-                .inputSchema(schema)
                 .build();
 
         return SyncToolSpecification.builder()
@@ -137,7 +131,7 @@ public class ConsoleTools {
                     }
 
                     return CallToolResult.builder()
-                            .content(List.of(new TextContent(resultado)))
+                            .content(List.of(TextContent.builder(resultado).build()))
                             .build();
                 })
                 .build();
@@ -154,10 +148,8 @@ public class ConsoleTools {
             "required", List.of("termo")
         );
 
-        Tool tool = Tool.builder()
-                .name("buscar_consoles")
+        Tool tool = Tool.builder("buscar_consoles", schema)
                 .description("Busca consoles no catálogo utilizando um termo de pesquisa.")
-                .inputSchema(schema)
                 .build();
 
         return SyncToolSpecification.builder()
@@ -176,7 +168,7 @@ public class ConsoleTools {
                     if (termo == null || termo.isBlank()) {
                         return CallToolResult.builder()
                                 .isError(true)
-                                .content(List.of(new TextContent("Informe um termo para realizar a busca.")))
+                                .content(List.of(TextContent.builder("Informe um termo para realizar a busca.").build()))
                                 .build();
                     } else {
                         List<Console> consoles = service.buscarConsoles(termo);
@@ -197,7 +189,7 @@ public class ConsoleTools {
                     }
 
                     return CallToolResult.builder()
-                            .content(List.of(new TextContent(resultado)))
+                            .content(List.of(TextContent.builder(resultado).build()))
                             .build();
                 })
                 .build();

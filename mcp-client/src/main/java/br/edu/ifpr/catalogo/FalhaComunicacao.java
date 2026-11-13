@@ -4,6 +4,8 @@ import java.util.concurrent.TimeoutException;
 
 class FalhaComunicacao extends RuntimeException {
 
+    private static final long serialVersionUID = 1L;
+
     FalhaComunicacao(String operacao, RuntimeException causa) {
         super(mensagem(operacao, causa), causa);
     }

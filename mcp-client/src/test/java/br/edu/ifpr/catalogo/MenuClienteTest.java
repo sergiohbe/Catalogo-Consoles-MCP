@@ -27,7 +27,7 @@ class MenuClienteTest {
 
     private CallToolResult responder(String ferramenta, Map<String, Object> argumentos) {
         chamadas.add(new Chamada(ferramenta, argumentos));
-        return CallToolResult.builder().content(List.of(new TextContent("Resposta recebida"))).build();
+        return CallToolResult.builder().content(List.of(TextContent.builder("Resposta recebida").build())).build();
     }
 
     private String executar(String entrada, ConsultaCatalogo catalogo) {
@@ -40,8 +40,7 @@ class MenuClienteTest {
     }
 
     private Tool ferramenta(String nome, Map<String, Object> propriedades, List<String> obrigatorios) {
-        return Tool.builder().name(nome).description("Descrição de " + nome)
-                .inputSchema(Map.of("type", "object", "properties", propriedades, "required", obrigatorios)).build();
+        return Tool.builder(nome, Map.of("type", "object", "properties", propriedades, "required", obrigatorios)).description("Descrição de " + nome).build();
     }
 
     private String executar(String entrada, ConsultaCatalogo catalogo, List<Tool> ferramentas) {
@@ -88,7 +87,7 @@ class MenuClienteTest {
         String saida = executar("2\nps2\ninexistente\n3\n0\n", (ferramenta, argumentos) -> {
             if (ferramenta.equals("comparar_consoles")) {
                 return CallToolResult.builder().isError(true)
-                        .content(List.of(new TextContent("Console não encontrado: inexistente"))).build();
+                        .content(List.of(TextContent.builder("Console não encontrado: inexistente").build())).build();
             }
             return responder(ferramenta, argumentos);
         });

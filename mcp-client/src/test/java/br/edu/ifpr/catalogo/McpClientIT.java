@@ -100,7 +100,7 @@ class McpClientIT {
         var recursos = cliente.listResources().resources();
         assertEquals(1, recursos.size());
         assertEquals("catalogo://consoles", recursos.getFirst().uri());
-        var resultado = cliente.readResource(new io.modelcontextprotocol.spec.McpSchema.ReadResourceRequest("catalogo://consoles"));
+        var resultado = cliente.readResource(io.modelcontextprotocol.spec.McpSchema.ReadResourceRequest.builder("catalogo://consoles").build());
         var conteudo = (io.modelcontextprotocol.spec.McpSchema.TextResourceContents) resultado.contents().getFirst();
         var dados = McpJsonDefaults.getMapper().readValue(conteudo.text(),
                 new io.modelcontextprotocol.json.TypeRef<java.util.List<Map<String, Object>>>() { });
@@ -115,8 +115,7 @@ class McpClientIT {
         var prompts = cliente.listPrompts().prompts();
         assertEquals(1, prompts.size());
         assertEquals("orientar_comparacao", prompts.getFirst().name());
-        var resultado = cliente.getPrompt(new io.modelcontextprotocol.spec.McpSchema.GetPromptRequest("orientar_comparacao",
-                Map.of("primeiro", "ps5-pro", "segundo", "xbox-series-x")));
+        var resultado = cliente.getPrompt(io.modelcontextprotocol.spec.McpSchema.GetPromptRequest.builder("orientar_comparacao").arguments(Map.of("primeiro", "ps5-pro", "segundo", "xbox-series-x")).build());
         String texto = ((TextContent) resultado.messages().getFirst().content()).text();
         assertTrue(texto.contains("PlayStation 5 Pro | ID: ps5-pro"));
         assertTrue(texto.contains("Xbox Series X | ID: xbox-series-x"));
@@ -126,12 +125,11 @@ class McpClientIT {
     @Test
     void deveRejeitarContextoInvalidoESeguirAtendendo() {
         org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class, () -> cliente.readResource(
-                new io.modelcontextprotocol.spec.McpSchema.ReadResourceRequest("catalogo://inexistente")));
+                io.modelcontextprotocol.spec.McpSchema.ReadResourceRequest.builder("catalogo://inexistente").build()));
         org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class, () -> cliente.getPrompt(
-                new io.modelcontextprotocol.spec.McpSchema.GetPromptRequest("orientar_comparacao", Map.of("primeiro", "ps2"))));
+                io.modelcontextprotocol.spec.McpSchema.GetPromptRequest.builder("orientar_comparacao").arguments(Map.of("primeiro", "ps2")).build()));
         org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class, () -> cliente.getPrompt(
-                new io.modelcontextprotocol.spec.McpSchema.GetPromptRequest("orientar_comparacao",
-                        Map.of("primeiro", "ps2", "segundo", "inexistente"))));
+                io.modelcontextprotocol.spec.McpSchema.GetPromptRequest.builder("orientar_comparacao").arguments(Map.of("primeiro", "ps2", "segundo", "inexistente")).build()));
         assertTrue(consultar("estatisticas_consoles", Map.of()).contains("Total de consoles: 40"));
     }
 

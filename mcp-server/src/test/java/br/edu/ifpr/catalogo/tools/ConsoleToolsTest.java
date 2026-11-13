@@ -18,8 +18,7 @@ import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 class ConsoleToolsTest {
 
     private CallToolResult chamar(SyncToolSpecification ferramenta, Map<String, Object> argumentos) {
-        return ferramenta.callHandler().apply(null, CallToolRequest.builder()
-                .name(ferramenta.tool().name()).arguments(argumentos).build());
+        return ferramenta.callHandler().apply(null, CallToolRequest.builder(ferramenta.tool().name()).arguments(argumentos).build());
     }
 
     private String texto(CallToolResult resultado) {
@@ -82,8 +81,7 @@ class ConsoleToolsTest {
     void deveExibirTotalEContagensPorFabricante() {
         var ferramenta = new ConsoleTools(new ConsoleService(new ConsoleRepository()))
                 .estatisticasConsolesTool();
-        var resultado = ferramenta.callHandler().apply(null, CallToolRequest.builder()
-                .name("estatisticas_consoles").arguments(Map.of()).build());
+        var resultado = ferramenta.callHandler().apply(null, CallToolRequest.builder("estatisticas_consoles").arguments(Map.of()).build());
 
         assertFalse(Boolean.TRUE.equals(resultado.isError()));
         assertEquals("Total de consoles: 40\nConsoles por fabricante:\n"
@@ -94,8 +92,7 @@ class ConsoleToolsTest {
     private CallToolResult comparar(Map<String, Object> argumentos) {
         var ferramenta = new ConsoleTools(new ConsoleService(new ConsoleRepository()))
                 .compararConsolesTool();
-        return ferramenta.callHandler().apply(null, CallToolRequest.builder()
-                .name("comparar_consoles").arguments(argumentos).build());
+        return ferramenta.callHandler().apply(null, CallToolRequest.builder("comparar_consoles").arguments(argumentos).build());
     }
 
     @Test

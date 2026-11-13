@@ -20,7 +20,13 @@ public class MenuCliente {
     private final PrintStream saida;
 
     public MenuCliente(List<Tool> ferramentas, ConsultaCatalogo catalogo) {
-        this(ferramentas, catalogo, new Scanner(System.in), System.out);
+        this(ferramentas, catalogo, criarEntrada(), System.out);
+    }
+
+    private static Scanner criarEntrada() {
+        var console = System.console();
+        // O console do Windows pode usar uma codificação diferente do padrão do Java.
+        return console == null ? new Scanner(System.in) : new Scanner(console.reader());
     }
 
     MenuCliente(List<Tool> ferramentas, ConsultaCatalogo catalogo, Scanner entrada, PrintStream saida) {

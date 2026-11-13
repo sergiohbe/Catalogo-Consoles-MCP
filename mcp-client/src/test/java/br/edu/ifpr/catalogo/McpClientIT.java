@@ -189,7 +189,7 @@ class McpClientIT {
         assertTrue(resultado.contains("Resultados da busca por \"Dreamcast\" (1)"));
         assertTrue(resultado.contains("PlayStation 5 Pro | ID: ps5-pro"));
         assertTrue(resultado.contains("Total de consoles: 40"));
-        assertTrue(resultado.contains("Consoles do fabricante Sega (4)"));
+        assertTrue(resultado.contains("Consoles da fabricante Sega (4)"));
     }
 
     @Test
@@ -198,7 +198,7 @@ class McpClientIT {
         assertTrue(todos.contains("Consoles cadastrados (40)"));
         assertEquals(40, todos.lines().filter(linha -> linha.startsWith("- ")).count());
         String sega = consultar("listar_consoles", Map.of("fabricante", "Sega"));
-        assertTrue(sega.contains("Consoles do fabricante Sega (4)"));
+        assertTrue(sega.contains("Consoles da fabricante Sega (4)"));
         assertEquals(4, sega.lines().filter(linha -> linha.startsWith("- ")).count());
         assertFalse(sega.contains("Fabricante: Sony"));
         assertTrue(consultar("listar_consoles", Map.of("fabricante", "inexistente"))
@@ -209,7 +209,9 @@ class McpClientIT {
     void deveBuscarConsoleERetornarBuscaSemResultados() {
         String resultado = consultar("buscar_consoles", Map.of("termo", "Dreamcast"));
         assertTrue(resultado.contains("Resultados da busca por \"Dreamcast\" (1)"));
-        assertTrue(resultado.contains("Dreamcast | Fabricante: Sega | Lançamento: 1998"));
+        assertTrue(resultado.contains("Dreamcast | Fabricante: Sega | Lançamento: 1998 | Geração: 6ª geração"));
+        String porGeracao = consultar("buscar_consoles", Map.of("termo", "6"));
+        assertTrue(porGeracao.contains("PlayStation 2 | Fabricante: Sony | Lançamento: 2000 | Geração: 6ª geração"));
         assertTrue(consultar("buscar_consoles", Map.of("termo", "inexistente"))
                 .contains("Nenhum console encontrado"));
     }
@@ -230,15 +232,19 @@ class McpClientIT {
 
     @Test
     void deveOrientarQuandoTermoDaBuscaEstaVazio() {
+        var resultado = catalogo.consultar("buscar_consoles", Map.of("termo", " "));
+        assertTrue(Boolean.TRUE.equals(resultado.isError()));
         assertEquals("Informe um termo para realizar a busca.",
-                consultar("buscar_consoles", Map.of("termo", " ")));
+                texto(resultado));
+        assertTrue(consultar("buscar_consoles", Map.of("termo", "Dreamcast")).contains("Dreamcast"));
     }
 
     @Test
     void deveRetornarErrosDeComparacaoEContinuarAtendendo() {
         var inexistente = catalogo.consultar("comparar_consoles", Map.of("primeiro", "ps2", "segundo", "inexistente"));
-        assertTrue(Boolean.TRUE.equals(inexistente.isError()));
+        assertFalse(Boolean.TRUE.equals(inexistente.isError()));
         assertEquals("Console não encontrado: inexistente", texto(inexistente));
+        assertEquals("Console não encontrado: 3do", consultar("comparar_consoles", Map.of("primeiro", "ps3", "segundo", "3do")));
         var vazio = catalogo.consultar("comparar_consoles", Map.of("primeiro", " ", "segundo", "ps2"));
         assertTrue(Boolean.TRUE.equals(vazio.isError()));
         assertTrue(texto(vazio).contains("Informe o ID ou nome completo dos dois consoles"));

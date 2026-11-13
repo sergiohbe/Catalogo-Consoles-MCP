@@ -14,10 +14,6 @@ public class Console {
         this.nome = validarTexto(nome, "nome");
         this.fabricante = validarTexto(fabricante, "fabricante");
 
-        if (anoLancamento < 1970) {
-            throw new IllegalArgumentException("Ano de lançamento inválido.");
-        }
-
         this.anoLancamento = anoLancamento;
         this.geracao = validarTexto(geracao, "geração");
     }

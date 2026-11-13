@@ -34,7 +34,7 @@ tratamento de falhas e interação com o menu. Os testes do menu simulam as
 respostas MCP e não precisam iniciar outro processo.
 
 No servidor, os cenários incluem campos textuais nulos ou vazios, normalização
-dos dados, limite inferior do ano de lançamento, identificadores únicos,
+dos dados, identificadores únicos,
 proteção contra alteração do catálogo, filtros, buscas sem resultado,
 identificadores inválidos, comparação com consoles ausentes e estatísticas de
 um catálogo vazio. Esses cenários complementam os testes de sucesso; não

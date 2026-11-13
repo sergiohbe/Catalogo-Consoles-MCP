@@ -32,15 +32,4 @@ class ConsoleTest {
         }
     }
 
-    @Test
-    void deveRejeitarAnoAnteriorAoLimite() {
-        var erro = assertThrows(IllegalArgumentException.class,
-                () -> new Console("teste", "Teste", "Fabricante", 1969, "1ª geração"));
-        assertEquals("Ano de lançamento inválido.", erro.getMessage());
-    }
-
-    @Test
-    void deveAceitarAnoNoLimiteDaValidacao() {
-        assertEquals(1970, new Console("teste", "Teste", "Fabricante", 1970, "1ª geração").getAnoLancamento());
-    }
 }

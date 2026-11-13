@@ -73,6 +73,10 @@ comunicação, o cliente fecha a sessão e apresenta uma orientação para execu
 novamente. Erros retornados pelas ferramentas, como console inexistente na
 comparação, mantêm o menu disponível.
 
+Na ferramenta `comparar_consoles`, um console não cadastrado retorna uma mensagem
+normal (`Console não encontrado: ...`), sem `Tool Error`. Parâmetros obrigatórios
+vazios, ausentes ou de tipo inválido continuam sendo erros de entrada.
+
 ## Organização e testes
 
 `MainCliente` gerencia a inicialização e o encerramento da sessão.

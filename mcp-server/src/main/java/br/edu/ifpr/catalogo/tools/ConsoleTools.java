@@ -60,11 +60,14 @@ public class ConsoleTools {
                     var argumentos = request.arguments();
                     Object primeiro = argumentos == null ? null : argumentos.get("primeiro");
                     Object segundo = argumentos == null ? null : argumentos.get("segundo");
+                    if (!(primeiro instanceof String primeiroId) || primeiroId.isBlank()
+                            || !(segundo instanceof String segundoId) || segundoId.isBlank()) {
+                        return CallToolResult.builder()
+                                .isError(true)
+                                .content(List.of(new TextContent("Informe o ID ou nome completo dos dois consoles.")))
+                                .build();
+                    }
                     try {
-                        if (!(primeiro instanceof String primeiroId) || primeiroId.isBlank()
-                                || !(segundo instanceof String segundoId) || segundoId.isBlank()) {
-                            throw new IllegalArgumentException("Informe o ID ou nome completo dos dois consoles.");
-                        }
                         var consoles = service.compararConsoles(primeiroId, segundoId);
                         String comparacao = consoles.stream()
                                 .map(console -> "- " + console.getNome()
@@ -78,7 +81,6 @@ public class ConsoleTools {
                                 .build();
                     } catch (IllegalArgumentException e) {
                         return CallToolResult.builder()
-                                .isError(true)
                                 .content(List.of(new TextContent(e.getMessage())))
                                 .build();
                     }
@@ -92,7 +94,7 @@ public class ConsoleTools {
             "properties", Map.of(
                 "fabricante", Map.of(
                     "type", "string",
-                    "description", "Fabricante para filtrar os consoles, como Sony, Microsoft, Sega, Nintendo ou Atari."
+                    "description", "Digite uma fabricante para exibir os os consoles dela, fabricantes: Sony, Microsoft, Sega, Nintendo ou Atari."
                 )
             )
         );
@@ -123,7 +125,7 @@ public class ConsoleTools {
                     } else {
                         String titulo = fabricante == null || fabricante.isBlank()
                                 ? "Consoles cadastrados"
-                                : "Consoles do fabricante " + fabricante;
+                                : "Consoles da fabricante " + fabricante;
 
                         String lista = consoles.stream()
                                 .map(console -> "- " + console.getNome()
@@ -146,7 +148,7 @@ public class ConsoleTools {
             "properties", Map.of(
                 "termo", Map.of(
                     "type", "string",
-                    "description", "Termo utilizado para buscar consoles por nome, fabricante ou características."
+                    "description", "Termo utilizado para buscar consoles por nome, fabricante ou geração (4ª, 5ª, 6ª...)."
                 )
             ),
             "required", List.of("termo")
@@ -172,7 +174,10 @@ public class ConsoleTools {
                     String resultado;
 
                     if (termo == null || termo.isBlank()) {
-                        resultado = "Informe um termo para realizar a busca.";
+                        return CallToolResult.builder()
+                                .isError(true)
+                                .content(List.of(new TextContent("Informe um termo para realizar a busca.")))
+                                .build();
                     } else {
                         List<Console> consoles = service.buscarConsoles(termo);
 
@@ -182,7 +187,8 @@ public class ConsoleTools {
                             String lista = consoles.stream()
                                     .map(console -> "- " + console.getNome()
                                             + " | Fabricante: " + console.getFabricante()
-                                            + " | Lançamento: " + console.getAnoLancamento())
+                                            + " | Lançamento: " + console.getAnoLancamento()
+                                            + " | Geração: " + console.getGeracao())
                                     .collect(Collectors.joining("\n"));
 
                             resultado = "Resultados da busca por \"" + termo

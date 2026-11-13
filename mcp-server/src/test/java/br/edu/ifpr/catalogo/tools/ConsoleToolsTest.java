@@ -39,7 +39,7 @@ class ConsoleToolsTest {
     void deveExibirListaFiltradaOuMensagemSemFabricanteEncontrado() {
         var ferramenta = new ConsoleTools(new ConsoleService(new ConsoleRepository())).listarConsolesTool();
         String lista = texto(chamar(ferramenta, Map.of("fabricante", "Sega")));
-        assertTrue(lista.contains("Consoles do fabricante Sega (4)"));
+        assertTrue(lista.contains("Consoles da fabricante Sega (4)"));
         assertTrue(lista.contains("Dreamcast | Fabricante: Sega | Lançamento: 1998"));
         assertFalse(lista.contains("Fabricante: Sony"));
         assertEquals("Nenhum console encontrado para o fabricante informado.",
@@ -51,18 +51,30 @@ class ConsoleToolsTest {
         var ferramenta = new ConsoleTools(new ConsoleService(new ConsoleRepository())).buscarConsolesTool();
         String busca = texto(chamar(ferramenta, Map.of("termo", "Dreamcast")));
         assertTrue(busca.contains("Resultados da busca por \"Dreamcast\" (1)"));
-        assertTrue(busca.contains("Dreamcast | Fabricante: Sega | Lançamento: 1998"));
+        assertTrue(busca.contains("Dreamcast | Fabricante: Sega | Lançamento: 1998 | Geração: 6ª geração"));
         assertEquals("Nenhum console encontrado para o termo informado.",
                 texto(chamar(ferramenta, Map.of("termo", "inexistente"))));
     }
 
     @Test
+    void deveExibirGeracaoQueJustificaResultadoDaBuscaNumerica() {
+        var ferramenta = new ConsoleTools(new ConsoleService(new ConsoleRepository())).buscarConsolesTool();
+        String busca = texto(chamar(ferramenta, Map.of("termo", "6")));
+        assertTrue(busca.contains("PlayStation 2 | Fabricante: Sony | Lançamento: 2000 | Geração: 6ª geração"));
+        assertTrue(busca.lines().filter(linha -> linha.startsWith("- ")).allMatch(linha -> linha.contains(" | Geração: ")));
+    }
+
+    @Test
     void deveOrientarBuscaSemTermoValidoNoHandler() {
         var ferramenta = new ConsoleTools(new ConsoleService(new ConsoleRepository())).buscarConsolesTool();
-        assertEquals("Informe um termo para realizar a busca.", texto(chamar(ferramenta, null)));
+        var semArgumentos = chamar(ferramenta, null);
+        assertTrue(Boolean.TRUE.equals(semArgumentos.isError()));
+        assertEquals("Informe um termo para realizar a busca.", ((TextContent) semArgumentos.content().getFirst()).text());
         for (Map<String, Object> argumentos : java.util.List.<Map<String, Object>>of(
                 Map.of(), Map.of("termo", ""), Map.of("termo", " \t"), Map.of("termo", 123))) {
-            assertEquals("Informe um termo para realizar a busca.", texto(chamar(ferramenta, argumentos)));
+            var resultado = chamar(ferramenta, argumentos);
+            assertTrue(Boolean.TRUE.equals(resultado.isError()));
+            assertEquals("Informe um termo para realizar a busca.", ((TextContent) resultado.content().getFirst()).text());
         }
     }
 
@@ -96,11 +108,13 @@ class ConsoleToolsTest {
     }
 
     @Test
-    void deveRetornarErroParaConsoleInexistente() {
+    void deveRetornarMensagemNormalParaConsoleInexistente() {
         var resultado = comparar(Map.of("primeiro", "ps5-pro", "segundo", "inexistente"));
-        assertTrue(Boolean.TRUE.equals(resultado.isError()));
+        assertFalse(Boolean.TRUE.equals(resultado.isError()));
         assertEquals("Console não encontrado: inexistente",
                 ((TextContent) resultado.content().getFirst()).text());
+        assertEquals("Console não encontrado: 3do", texto(comparar(Map.of("primeiro", "ps3", "segundo", "3do"))));
+        assertEquals("Console não encontrado: 3do", texto(comparar(Map.of("primeiro", "3do", "segundo", "ps3"))));
     }
 
     @Test

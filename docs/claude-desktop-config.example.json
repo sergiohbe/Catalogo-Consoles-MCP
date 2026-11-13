@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "catalogo-consoles": {
+      "command": "C:\\caminho\\para\\jdk-21\\bin\\java.exe",
+      "args": [
+        "-jar",
+        "C:\\caminho\\para\\catalogo-consoles-mcp\\mcp-server\\target\\mcp-server-1.0-SNAPSHOT.jar"
+      ]
+    }
+  }
+}

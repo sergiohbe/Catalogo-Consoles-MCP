@@ -90,7 +90,27 @@ As quatro ferramentas foram validadas pelo modo CLI do MCP Inspector 2.13.0,
 com cenários de sucesso, ausência de resultados e erros de comparação.
 Veja o [roteiro e as evidências](docs/validacao-inspector.md), incluindo os
 comandos para repetir a validação e a conferência manual na interface visual.
-Essa validação é independente da suíte Maven e da futura conferência no Claude Desktop.
+Essa validação é independente da suíte Maven e da conferência no Claude Desktop.
+
+## Integração com Claude Desktop
+
+Veja o [guia de configuração e validação](docs/validacao-claude-desktop.md) e o
+[exemplo de configuração](docs/claude-desktop-config.example.json).
+O guia descreve os caminhos do Java e do JAR, a instalação local do servidor,
+os pedidos para testar cada ferramenta e os critérios de aprovação.
+A conexão, a descoberta MCP e a execução das quatro ferramentas por uma conversa
+no Claude Desktop foram validadas em 12/11/2026. O roteiro incluiu sete chamadas,
+com erro controlado de console inexistente e consulta bem-sucedida depois dele.
+Os resultados foram compartilhados pelo autor e as sete chamadas/respostas foram
+confirmadas no log MCP local; veja os detalhes e os limites das evidências no guia.
+
+## Resources e prompts
+
+O servidor também oferece o resource de leitura `catalogo://consoles`, em JSON,
+e o prompt `orientar_comparacao`, com os argumentos obrigatórios `primeiro` e
+`segundo`. O cliente permite descobri-los e consultá-los por opções de terminal,
+preservando o menu dinâmico das quatro ferramentas.
+Veja os [contratos, exemplos e testes](docs/recursos-e-prompts.md).
 
 ### JAR em uso durante o build
 

@@ -5,6 +5,8 @@ import java.util.concurrent.CountDownLatch;
 import br.edu.ifpr.catalogo.repository.ConsoleRepository;
 import br.edu.ifpr.catalogo.service.ConsoleService;
 import br.edu.ifpr.catalogo.tools.ConsoleTools;
+import br.edu.ifpr.catalogo.resource.CatalogoResource;
+import br.edu.ifpr.catalogo.prompt.ComparacaoPrompt;
 import io.modelcontextprotocol.json.McpJsonDefaults;
 import io.modelcontextprotocol.server.McpServer;
 import io.modelcontextprotocol.server.McpSyncServer;
@@ -27,6 +29,8 @@ public class MainServidor {
                 .capabilities(
                         McpSchema.ServerCapabilities.builder()
                                 .tools(true)
+                                .resources(false, true)
+                                .prompts(true)
                                 .build()
                 )
                 .build();
@@ -35,6 +39,8 @@ public class MainServidor {
         servidor.addTool(ferramentas.buscarConsolesTool());
         servidor.addTool(ferramentas.compararConsolesTool());
         servidor.addTool(ferramentas.estatisticasConsolesTool());
+        servidor.addResource(new CatalogoResource(servico).especificacao());
+        servidor.addPrompt(new ComparacaoPrompt(servico).especificacao());
 
         Runtime.getRuntime().addShutdownHook(
                 new Thread(servidor::close)

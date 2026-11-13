@@ -1,5 +1,9 @@
 # Cliente MCP
 
+Além do menu de ferramentas, o cliente oferece `--recursos`, `--recurso URI`,
+`--prompts` e `--prompt NOME parametro=valor`. Veja os
+[exemplos de resources e prompts](../docs/recursos-e-prompts.md).
+
 Requer Java 21 e Maven. Na raiz do projeto, compile os dois módulos:
 
 ```powershell

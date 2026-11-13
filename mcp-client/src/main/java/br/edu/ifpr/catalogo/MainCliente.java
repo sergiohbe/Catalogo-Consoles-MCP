@@ -4,6 +4,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Map;
+import java.util.Arrays;
 
 import io.modelcontextprotocol.client.McpClient;
 import io.modelcontextprotocol.client.transport.ServerParameters;
@@ -15,13 +16,15 @@ import io.modelcontextprotocol.spec.McpSchema.TextContent;
 public class MainCliente {
 
     public static void main(String[] args) {
-        if (args.length < 1 || args.length > 2) {
-            System.err.println("Uso: java -jar mcp-client.jar <caminho-do-servidor.jar> [termo]");
+        if (args.length < 1) {
+            System.err.println("Uso: java -jar mcp-client.jar <caminho-do-servidor.jar> [termo | comando]");
             System.exit(1);
         }
 
         try {
-            executar(Path.of(args[0]), args.length == 2 ? args[1] : null);
+            var opcoes = Arrays.copyOfRange(args, 1, args.length);
+            ComandosContexto.validar(opcoes);
+            executar(Path.of(args[0]), opcoes);
         } catch (IllegalArgumentException e) {
             System.err.println("Não foi possível iniciar o cliente: " + e.getMessage());
             System.exit(1);
@@ -34,7 +37,8 @@ public class MainCliente {
         }
     }
 
-    private static void executar(Path servidorJar, String termo) {
+    private static void executar(Path servidorJar, String[] opcoes) {
+        String termo = opcoes.length == 1 && !opcoes[0].startsWith("--") ? opcoes[0] : null;
         if (!Files.isRegularFile(servidorJar)) {
             throw new IllegalArgumentException("JAR do servidor não encontrado: " + servidorJar);
         }
@@ -64,15 +68,19 @@ public class MainCliente {
                 throw new FalhaComunicacao("conectar ao servidor MCP e descobrir suas ferramentas", e);
             }
 
-            var catalogo = new ClienteCatalogo(cliente);
-            var ferramentas = catalogo.listarFerramentas();
-            if (termo == null) {
-                new MenuCliente(ferramentas, catalogo).executar();
+            if (ComandosContexto.executar(cliente, opcoes, System.out)) {
+                System.out.println("Consulta MCP concluída.");
             } else {
-                System.out.println("Ferramentas disponíveis:");
-                ferramentas.forEach(tool -> System.out.println("- " + tool.name()));
-                exibirResultado(catalogo.consultar("listar_consoles", Map.of()));
-                exibirResultado(catalogo.consultar("buscar_consoles", Map.of("termo", termo)));
+                var catalogo = new ClienteCatalogo(cliente);
+                var ferramentas = catalogo.listarFerramentas();
+                if (termo == null) {
+                    new MenuCliente(ferramentas, catalogo).executar();
+                } else {
+                    System.out.println("Ferramentas disponíveis:");
+                    ferramentas.forEach(tool -> System.out.println("- " + tool.name()));
+                    exibirResultado(catalogo.consultar("listar_consoles", Map.of()));
+                    exibirResultado(catalogo.consultar("buscar_consoles", Map.of("termo", termo)));
+                }
             }
         }
         System.out.println("Conexão MCP encerrada.");

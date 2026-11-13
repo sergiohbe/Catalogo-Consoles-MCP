@@ -94,6 +94,64 @@ class McpClientIT {
                 .map(TextContent.class::cast).map(TextContent::text).collect(Collectors.joining("\n"));
     }
 
+    @Test
+    void deveDescobrirELerResourceDoCatalogo() throws Exception {
+        assertNotNull(cliente.getServerCapabilities().resources());
+        var recursos = cliente.listResources().resources();
+        assertEquals(1, recursos.size());
+        assertEquals("catalogo://consoles", recursos.getFirst().uri());
+        var resultado = cliente.readResource(new io.modelcontextprotocol.spec.McpSchema.ReadResourceRequest("catalogo://consoles"));
+        var conteudo = (io.modelcontextprotocol.spec.McpSchema.TextResourceContents) resultado.contents().getFirst();
+        var dados = McpJsonDefaults.getMapper().readValue(conteudo.text(),
+                new io.modelcontextprotocol.json.TypeRef<java.util.List<Map<String, Object>>>() { });
+        assertEquals(40, dados.size());
+        assertEquals("application/json", conteudo.mimeType());
+        assertTrue(dados.stream().anyMatch(console -> "dreamcast".equals(console.get("id"))));
+    }
+
+    @Test
+    void deveDescobrirEObterPromptDeComparacao() {
+        assertNotNull(cliente.getServerCapabilities().prompts());
+        var prompts = cliente.listPrompts().prompts();
+        assertEquals(1, prompts.size());
+        assertEquals("orientar_comparacao", prompts.getFirst().name());
+        var resultado = cliente.getPrompt(new io.modelcontextprotocol.spec.McpSchema.GetPromptRequest("orientar_comparacao",
+                Map.of("primeiro", "ps5-pro", "segundo", "xbox-series-x")));
+        String texto = ((TextContent) resultado.messages().getFirst().content()).text();
+        assertTrue(texto.contains("PlayStation 5 Pro | ID: ps5-pro"));
+        assertTrue(texto.contains("Xbox Series X | ID: xbox-series-x"));
+        assertTrue(texto.contains("Não invente preço"));
+    }
+
+    @Test
+    void deveRejeitarContextoInvalidoESeguirAtendendo() {
+        org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class, () -> cliente.readResource(
+                new io.modelcontextprotocol.spec.McpSchema.ReadResourceRequest("catalogo://inexistente")));
+        org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class, () -> cliente.getPrompt(
+                new io.modelcontextprotocol.spec.McpSchema.GetPromptRequest("orientar_comparacao", Map.of("primeiro", "ps2"))));
+        org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class, () -> cliente.getPrompt(
+                new io.modelcontextprotocol.spec.McpSchema.GetPromptRequest("orientar_comparacao",
+                        Map.of("primeiro", "ps2", "segundo", "inexistente"))));
+        assertTrue(consultar("estatisticas_consoles", Map.of()).contains("Total de consoles: 40"));
+    }
+
+    @Test
+    void deveExecutarComandosDeContextoPeloCliente() {
+        var buffer = new ByteArrayOutputStream();
+        try (var saida = new PrintStream(buffer, true, StandardCharsets.UTF_8)) {
+            for (String[] args : java.util.List.of(new String[] { "--recursos" },
+                    new String[] { "--recurso", "catalogo://consoles" }, new String[] { "--prompts" },
+                    new String[] { "--prompt", "orientar_comparacao", "primeiro=ps2", "segundo=Dreamcast" })) {
+                assertTrue(ComandosContexto.executar(cliente, args, saida));
+            }
+        }
+        String texto = buffer.toString(StandardCharsets.UTF_8);
+        assertTrue(texto.contains("catalogo://consoles"));
+        assertTrue(texto.contains("orientar_comparacao"));
+        assertTrue(texto.contains("PlayStation 2 | ID: ps2"));
+        assertTrue(texto.contains("Dreamcast | ID: dreamcast"));
+    }
+
     private String consultar(String ferramenta, Map<String, Object> argumentos) {
         var resultado = catalogo.consultar(ferramenta, argumentos);
         assertFalse(Boolean.TRUE.equals(resultado.isError()), texto(resultado));
